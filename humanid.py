@@ -46,7 +46,7 @@ class HumanId(object):
 
 if __name__ == "__main__":
     hid = HumanId()
-    for i in range(100):
-        print(hid.any_id(' '))
+    for i in range(10):
+        print(hid.any_id('_'))
 
 
