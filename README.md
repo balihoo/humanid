@@ -36,3 +36,5 @@ human readable unique-ish identifiers
 * cause_and_the_absurd_tourists
 * woozy_behest_of_polity
 * vast_wood_of_chastity
+
+[more examples](examples.txt)
