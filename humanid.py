@@ -42,36 +42,42 @@ class HumanId(object):
     def _pluralize(self, noun):
         """ do a poor job of pluralizing a noun """
         if len(noun) > 1:
-            if noun[-1] == 's':
+            if noun.endswith('s'):
                 return noun
-            if noun[-1] == 'h':
+            if noun.endswith('sh'):
                 return noun + 'es'
-            if noun[-1] == 'y':
+            if noun.endswith('y'):
                 if noun[-2] not in "aeoui":
                     return noun[:-1] + 'ies'
         return noun + 's'
 
-    def rpg_item(self, separator='_', hexstr=None):
+    def rpg_item(self, separator='_', hexstr=None, return_hash=False):
         """ create an id in the form of an item from a Role Playing Game:
         e.g. sick_gear_of_elegance """
+        if return_hash and hexstr is None:
+            hexstr = uuid.uuid4().get_hex()
         (adj, noun, stuff) = self._words(hexstr, (self.adjectives, self.nouns, self.ofstuff))
-        return separator.join([
+        humid = separator.join([
             adj, noun, 'of', stuff
         ]).replace('-', separator)
+        return humid if not return_hash else (hexstr, humid)
 
-    def band_name(self, separator='_', hexstr=None):
+    def band_name(self, separator='_', hexstr=None, return_hash=False):
         """ create an id in the form of a band name: surprise_and_the_anxious_toys"""
+        if return_hash and hexstr is None:
+            hexstr = uuid.uuid4().get_hex()
         (lead, adj, band) = self._words(hexstr, (self.nouns, self.adjectives, self.nouns))
-        return separator.join([
+        humid = separator.join([
             lead, 'and', 'the', adj, self._pluralize(band)
         ]).replace('-', separator)
+        return humid if not return_hash else (hexstr, humid)
 
-    def any_id(self, separator=None):
+    def any_id(self, *args, **kwargs):
         """ create either a band name of an rpg item id """
         return random.choice([
             self.rpg_item,
             self.band_name
-        ])(separator)
+        ])(*args, **kwargs)
 
 if __name__ == "__main__":
     hid = HumanId()
