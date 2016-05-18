@@ -9,10 +9,10 @@ class HumanId(object):
             with open("data/" + name) as f:
                 return f.read().splitlines()
 
-        self.adjectives = read_list('adjectives')
-        self.nouns = read_list('nouns')
+        self.adjectives = sorted(read_list('adjectives'))
+        self.nouns = sorted(read_list('nouns'))
         ofstuff_files =['ity', 'ence', 'ance', 'ment', 'tent', 'ncy', 'ness']
-        self.ofstuff = sum([read_list(l) for l in ofstuff_files], [])
+        self.ofstuff = sorted(sum([read_list(l) for l in ofstuff_files], []))
 
     def _chunk(self, hexstr, count):
         """ chunk a string into 'count' equal parts, padding if necessary """
