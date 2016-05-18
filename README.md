@@ -1,5 +1,7 @@
 # humanid
-human readable unique-ish identifiers
+human readable unique-ish identifiers. Inspired by
+* [humanhash](https://github.com/zacharyvoase/humanhash)
+* [rusty towel of mutual understanding](http://codereview.stackexchange.com/questions/64402/regularity-in-the-rusty-towel-of-mutual-understanding)
 
 ## role playing game items
 * subtle jaw of intermediateness
