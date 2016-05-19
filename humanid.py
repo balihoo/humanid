@@ -1,12 +1,14 @@
 import random
 import uuid
 import math
+import os
 
 class HumanId(object):
     def __init__(self):
         """ create easy to remember, readable ids at random or based on a uuid """
+        datadir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "data")
         def read_list(name):
-            with open("data/" + name) as f:
+            with open(os.path.join(datadir, name)) as f:
                 return f.read().splitlines()
 
         self.adjectives = sorted(read_list('adjectives'))
