@@ -41,19 +41,46 @@ class TestHumanid(unittest.TestCase):
         print("stuff: {}".format(stuff_count))
         rpg_count = noun_count * adj_count * stuff_count
         band_count = noun_count * adj_count * noun_count
-        def prob_table(n):
+        def prob_table(n, show=True, maxorder=8, minorder=1):
             def prob(k, n):
                 return 1.0 - math.exp((-1.0 * k * (k - 1.0)) / (2.0 * n))
-            for order in xrange(1,8):
+            probs = {}
+            for order in xrange(minorder,maxorder):
                 guesses = 10 ** order
                 p = prob(guesses, n)
-                print("{:8} ids: {}".format(guesses, p))
+                probs[guesses] = p
+                if show:
+                    print(("{:%d,} ids: {}" % int(maxorder * 1.3)).format(guesses, p))
+            return probs
+
         print("rpg item combinations: {:,}".format(rpg_count))
-        print("probability for collisions with rpg item:")
-        prob_table(rpg_count)
+        print("probability for collisions:")
+        prpg = prob_table(rpg_count)
+
         print("\nband name combinations: {:,}".format(band_count))
-        print("probability for collisions with band names:")
-        prob_table(band_count)
+        print("probability for collisions:")
+        pband = prob_table(band_count)
+
+        print("\nitem_by_band_name combinations: {:,}".format(band_count * rpg_count))
+        print("probability for collisions:")
+        prob_table(band_count * rpg_count, maxorder=12)
+
+        print("\nitem OR band_name combinations: {:,}".format(band_count + rpg_count))
+        print("probability for collisions:")
+        for guesses in sorted(prpg.keys()):
+            p = (prpg[guesses] + pband[guesses]) / 2
+            print("{:8} ids: {}".format(guesses, p))
+
+        eighthex = (26 + 10) ** 8
+        print("\n8 character case insensitive hex string combinations: {:,}".format(eighthex))
+        print("probability for collisions:")
+        prob_table(eighthex, maxorder=9)
+
+        sixteenhex = (26 + 10) ** 16
+        print("\n16 character case insensitive hex string combinations: {:,}".format(sixteenhex))
+        print("probability for collisions:")
+        prob_table(sixteenhex, minorder=4, maxorder=14)
+
         self.assertTrue(True)
 
     def test_words(self):
