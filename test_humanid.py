@@ -17,7 +17,7 @@ class TestHumanid(unittest.TestCase):
         self.assertEqual(self.hid._chunk(hexin, 5), res5)
         #hey, works for lists too, but it would pad...
         self.assertEqual(
-            self.hid._chunk(range(0,10), 5),
+            self.hid._chunk(list(range(0,10)), 5),
             [[0, 1], [2, 3], [4, 5], [6, 7], [8, 9]]
         )
 
@@ -45,7 +45,7 @@ class TestHumanid(unittest.TestCase):
             def prob(k, n):
                 return 1.0 - math.exp((-1.0 * k * (k - 1.0)) / (2.0 * n))
             probs = {}
-            for order in xrange(minorder,maxorder):
+            for order in range(minorder,maxorder):
                 guesses = 10 ** order
                 p = prob(guesses, n)
                 probs[guesses] = p
@@ -125,7 +125,7 @@ class TestHumanid(unittest.TestCase):
 
     def test_any_id(self):
         hexin = 'e5dc0c113b1541b4b97a029be34904aa'
-        d = dict(reversed(self.hid.any_id(separator=' ', hexstr=hexin, return_hash=True)) for i in xrange(1000))
+        d = dict(reversed(self.hid.any_id(separator=' ', hexstr=hexin, return_hash=True)) for i in range(1000))
         self.assertEqual(len(d.keys()), 2)
         self.assertTrue(all([v == hexin for v in d.values()]))
 

@@ -2,6 +2,8 @@ import random
 import uuid
 import math
 import os
+import re
+import sys
 
 class HumanId(object):
     def __init__(self):
@@ -15,6 +17,7 @@ class HumanId(object):
         self.nouns = sorted(read_list('nouns'))
         ofstuff_files =['ity', 'ence', 'ance', 'ment', 'tent', 'ncy', 'ness']
         self.ofstuff = sorted(sum([read_list(l) for l in ofstuff_files], []))
+        self._rx_non_letter = re.compile('([^a-zA-Z])')
 
     def _chunk(self, hexstr, count):
         """ chunk a string into 'count' equal parts, padding if necessary """
@@ -25,7 +28,7 @@ class HumanId(object):
         #make string fitting len by appending the front
         hexstr += hexstr[0:n - m]
         #divide the string in equal chunks
-        chunks = [hexstr[i:i+n] for i in xrange(0, l, n)]
+        chunks = [hexstr[i:i+n] for i in range(0, l, n)]
         return chunks
 
     def _indices(self, hexstr, lengths):
@@ -46,7 +49,7 @@ class HumanId(object):
         if len(noun) > 1:
             if noun.endswith('s'):
                 return noun
-            if noun.endswith('sh'):
+            if any(noun.endswith(s) for s in ['sh', 'x', 'o']):
                 return noun + 'es'
             if noun.endswith('y'):
                 if noun[-2] not in "aeoui":
@@ -57,21 +60,21 @@ class HumanId(object):
         """ create an id in the form of an item from a Role Playing Game:
         e.g. sick_gear_of_elegance """
         if return_hash and hexstr is None:
-            hexstr = uuid.uuid4().get_hex()
+            hexstr = uuid.uuid4().hex
+        def sub(s):
+            return self._rx_non_letter.sub(separator, s)
         (adj, noun, stuff) = self._words(hexstr, (self.adjectives, self.nouns, self.ofstuff))
-        humid = separator.join([
-            adj, noun, 'of', stuff
-        ]).replace('-', separator)
+        humid = separator.join([sub(word) for word in [adj, noun, 'of', stuff]])
         return humid if not return_hash else (hexstr, humid)
 
     def band_name(self, separator='_', hexstr=None, return_hash=False):
         """ create an id in the form of a band name: surprise_and_the_anxious_toys"""
         if return_hash and hexstr is None:
-            hexstr = uuid.uuid4().get_hex()
+            hexstr = uuid.uuid4().hex
+        def sub(s):
+            return self._rx_non_letter.sub(separator, s)
         (lead, adj, band) = self._words(hexstr, (self.nouns, self.adjectives, self.nouns))
-        humid = separator.join([
-            lead, 'and', 'the', adj, self._pluralize(band)
-        ]).replace('-', separator)
+        humid = separator.join([sub(word) for word in [lead, 'and', 'the', adj, self._pluralize(band)]])
         return humid if not return_hash else (hexstr, humid)
 
     def any_id(self, *args, **kwargs):
@@ -83,7 +86,7 @@ class HumanId(object):
 
 if __name__ == "__main__":
     hid = HumanId()
-    uid = uuid.uuid4().get_hex()
+    uid = uuid.uuid4().hex
     print(hid.rpg_item(hexstr=uid))
     print(hid.rpg_item(hexstr=uid))
     print(hid.band_name(hexstr=uid))
