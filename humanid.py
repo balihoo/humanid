@@ -77,6 +77,16 @@ class HumanId(object):
         humid = separator.join([sub(word) for word in [lead, 'and', 'the', adj, self._pluralize(band)]])
         return humid if not return_hash else (hexstr, humid)
 
+    def rap_name(self, separator='_', hexstr=None, return_hash=False):
+        """ create an id in the form of a rap name: lil_blue_eyed_tube"""
+        if return_hash and hexstr is None:
+            hexstr = uuid.uuid4().hex
+        def sub(s):
+            return self._rx_non_letter.sub(separator, s)
+        (adj, noun) = self._words(hexstr, (self.adjectives, self.nouns))
+        humid = separator.join([sub(word) for word in ['lil', adj, noun]])
+        return humid if not return_hash else (hexstr, humid)
+
     def any_id(self, *args, **kwargs):
         """ create either a band name of an rpg item id """
         return random.choice([
@@ -91,7 +101,9 @@ if __name__ == "__main__":
     print(hid.rpg_item(hexstr=uid))
     print(hid.band_name(hexstr=uid))
     print(hid.band_name(hexstr=uid))
+    print(hid.rap_name(hexstr=uid))
     print(hid.rpg_item())
     print(hid.band_name())
+    print(hid.rap_name())
 
 
