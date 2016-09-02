@@ -35,12 +35,16 @@ class TestHumanid(unittest.TestCase):
         noun_count = len(self.hid.nouns)
         adj_count = len(self.hid.adjectives)
         stuff_count = len(self.hid.ofstuff)
+        title_count = len(self.hid.rap_titles)
         print("\n====combination stats====")
         print("nouns: {}".format(noun_count))
         print("adjectives: {}".format(adj_count))
         print("stuff: {}".format(stuff_count))
+        print("rapper titles: {}".format(title_count))
         rpg_count = noun_count * adj_count * stuff_count
         band_count = noun_count * adj_count * noun_count
+        rapper_count = title_count * adj_count * noun_count * title_count * noun_count
+
         def prob_table(n, show=True, maxorder=8, minorder=1):
             def prob(k, n):
                 return 1.0 - math.exp((-1.0 * k * (k - 1.0)) / (2.0 * n))
@@ -60,6 +64,10 @@ class TestHumanid(unittest.TestCase):
         print("\nband name combinations: {:,}".format(band_count))
         print("probability for collisions:")
         pband = prob_table(band_count)
+
+        print("\nrapper name combinations: {:,}".format(rapper_count))
+        print("probability for collisions:")
+        pband = prob_table(rapper_count)
 
         print("\nitem_by_band_name combinations: {:,}".format(band_count * rpg_count))
         print("probability for collisions:")
@@ -124,16 +132,15 @@ class TestHumanid(unittest.TestCase):
         self.assertNotEqual(band, expected)
 
     def test_rap_name(self):
-        hexin = 'e5dc0c113b1541b4b97a029be34904aa'
-        expected_words = ["experienced", "grasshoppah", "feat", "clam"]
+        hexin = '1b4b97a029be34904aae5dc0c113b154'
+        expected = "slim unfolded tractor feat phat rain"
         rapper = self.hid.rap_name(separator=' ', hexstr=hexin)
-        rapper_words = rapper.split(' ')
-        self.assertEqual(rapper_words[1:4], expected_words[:3])
+        self.assertEqual(rapper, expected)
         (uuid, rapper) = self.hid.rap_name(separator=' ', hexstr=hexin, return_hash=True)
         self.assertEqual(uuid, hexin)
         (uuid, rapper) = self.hid.rap_name(separator=' ', return_hash=True)
         self.assertNotEqual(uuid, hexin)
-        self.assertNotEqual(rapper, expected_words)
+        self.assertNotEqual(rapper, expected)
 
     def test_any_id(self):
         hexin = 'e5dc0c113b1541b4b97a029be34904aa'

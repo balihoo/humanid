@@ -18,6 +18,7 @@ class HumanId(object):
         ofstuff_files =['ity', 'ence', 'ance', 'ment', 'tent', 'ncy', 'ness']
         self.ofstuff = sorted(sum([read_list(l) for l in ofstuff_files], []))
         self._rx_non_letter = re.compile('([^a-zA-Z])')
+        self.rap_titles = ['lil', 'big', 'mc', 'dj', 'dr', 'young', 'notorious', 'phat', 'slim', 'tha']
 
     def _chunk(self, hexstr, count):
         """ chunk a string into 'count' equal parts, padding if necessary """
@@ -43,6 +44,12 @@ class HumanId(object):
             return (random.choice(l) for l in lists)
         idxs = self._indices(hexstr, [len(l) for l in lists])
         return (l[i] for l,i in zip(lists, idxs))
+
+    def _mksub(self, token):
+        """ shorthand maker """
+        def sub(s):
+            return self._rx_non_letter.sub(token, s)
+        return sub
 
     def _pluralize(self, noun):
         """ do a poor job of pluralizing a noun """
@@ -70,8 +77,7 @@ class HumanId(object):
         e.g. sick_gear_of_elegance """
         if return_hash and hexstr is None:
             hexstr = uuid.uuid4().hex
-        def sub(s):
-            return self._rx_non_letter.sub(separator, s)
+        sub = self._mksub(separator)
         (adj, noun, stuff) = self._words(hexstr, (self.adjectives, self.nouns, self.ofstuff))
         humid = separator.join([sub(word) for word in [adj, noun, 'of', stuff]])
         return humid if not return_hash else (hexstr, humid)
@@ -80,8 +86,7 @@ class HumanId(object):
         """ create an id in the form of a band name: surprise_and_the_anxious_toys"""
         if return_hash and hexstr is None:
             hexstr = uuid.uuid4().hex
-        def sub(s):
-            return self._rx_non_letter.sub(separator, s)
+        sub = self._mksub(separator)
         (lead, adj, band) = self._words(hexstr, (self.nouns, self.adjectives, self.nouns))
         humid = separator.join([sub(word) for word in [lead, 'and', 'the', adj, self._pluralize(band)]])
         return humid if not return_hash else (hexstr, humid)
@@ -90,18 +95,13 @@ class HumanId(object):
         """ create an id in the form of a rap name: dj_exclusive_trousers_feat_tha_junk"""
         if return_hash and hexstr is None:
             hexstr = uuid.uuid4().hex
-        def sub(s):
-            return self._rx_non_letter.sub(separator, s)
+        sub = self._mksub(separator)
 
-        # Ensure that random titles are repeatable for a given hexstr
-        title_indices = [0, 1]
-        if hexstr:
-            title_indices = [int(s) for s in hexstr if s.isdigit()][:2]
-
-        (adj, noun, feature) = self._words(hexstr, (self.adjectives, self.nouns, self.nouns))
-        titles = ['lil', 'big', 'mc', 'dj', 'dr', 'young', 'notorious', 'phat', 'slim', 'tha']
-        humid = separator.join([sub(word) for word in [titles[title_indices[0]], self._rapify(adj), self._rapify(noun),
-                                                       'feat', titles[title_indices[1]], self._rapify(feature)]])
+        (title1, adj, noun, title2, feature) = self._words(hexstr, (self.rap_titles, self.adjectives, self.nouns, self.rap_titles, self.nouns))
+        humid = separator.join([sub(word) for word in [
+            title1, self._rapify(adj), self._rapify(noun),
+            'feat', title2, self._rapify(feature)
+        ]])
         return humid if not return_hash else (hexstr, humid)
 
     def any_id(self, *args, **kwargs):
