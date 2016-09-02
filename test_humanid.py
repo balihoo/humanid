@@ -123,10 +123,22 @@ class TestHumanid(unittest.TestCase):
         self.assertNotEqual(uuid, hexin)
         self.assertNotEqual(band, expected)
 
+    def test_rap_name(self):
+        hexin = 'e5dc0c113b1541b4b97a029be34904aa'
+        expected_words = ["experienced", "grasshoppah", "feat", "clam"]
+        rapper = self.hid.rap_name(separator=' ', hexstr=hexin)
+        rapper_words = rapper.split(' ')
+        self.assertEqual(rapper_words[1:4], expected_words[:3])
+        (uuid, rapper) = self.hid.rap_name(separator=' ', hexstr=hexin, return_hash=True)
+        self.assertEqual(uuid, hexin)
+        (uuid, rapper) = self.hid.rap_name(separator=' ', return_hash=True)
+        self.assertNotEqual(uuid, hexin)
+        self.assertNotEqual(rapper, expected_words)
+
     def test_any_id(self):
         hexin = 'e5dc0c113b1541b4b97a029be34904aa'
         d = dict(reversed(self.hid.any_id(separator=' ', hexstr=hexin, return_hash=True)) for i in range(1000))
-        self.assertEqual(len(d.keys()), 2)
+        self.assertEqual(len(d.keys()), 3)
         self.assertTrue(all([v == hexin for v in d.values()]))
 
 if __name__ == '__main__':

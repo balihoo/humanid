@@ -56,6 +56,15 @@ class HumanId(object):
                     return noun[:-1] + 'ies'
         return noun + 's'
 
+    def _rapify(self, word):
+        """ drop g's because 'real g's move in silence like lasagna'. Also turn -er words in to -ah words. """
+        if len(word) > 4:
+            if word.endswith('ing'):
+                return word[:-1]
+            elif word.endswith('er'):
+                return word[:-2] + 'ah'
+        return word
+
     def rpg_item(self, separator='_', hexstr=None, return_hash=False):
         """ create an id in the form of an item from a Role Playing Game:
         e.g. sick_gear_of_elegance """
@@ -78,20 +87,29 @@ class HumanId(object):
         return humid if not return_hash else (hexstr, humid)
 
     def rap_name(self, separator='_', hexstr=None, return_hash=False):
-        """ create an id in the form of a rap name: lil_blue_eyed_tube"""
+        """ create an id in the form of a rap name: dj_exclusive_trousers_feat_tha_junk"""
         if return_hash and hexstr is None:
             hexstr = uuid.uuid4().hex
         def sub(s):
             return self._rx_non_letter.sub(separator, s)
-        (adj, noun) = self._words(hexstr, (self.adjectives, self.nouns))
-        humid = separator.join([sub(word) for word in ['lil', adj, noun]])
+
+        # Ensure that random titles are repeatable for a given hexstr
+        title_indices = [0, 1]
+        if hexstr:
+            title_indices = [int(s) for s in hexstr if s.isdigit()][:2]
+
+        (adj, noun, feature) = self._words(hexstr, (self.adjectives, self.nouns, self.nouns))
+        titles = ['lil', 'big', 'mc', 'dj', 'dr', 'young', 'notorious', 'phat', 'slim', 'tha']
+        humid = separator.join([sub(word) for word in [titles[title_indices[0]], self._rapify(adj), self._rapify(noun),
+                                                       'feat', titles[title_indices[1]], self._rapify(feature)]])
         return humid if not return_hash else (hexstr, humid)
 
     def any_id(self, *args, **kwargs):
         """ create either a band name of an rpg item id """
         return random.choice([
             self.rpg_item,
-            self.band_name
+            self.band_name,
+            self.rap_name
         ])(*args, **kwargs)
 
 if __name__ == "__main__":
@@ -102,8 +120,7 @@ if __name__ == "__main__":
     print(hid.band_name(hexstr=uid))
     print(hid.band_name(hexstr=uid))
     print(hid.rap_name(hexstr=uid))
+    print(hid.rap_name(hexstr=uid))
     print(hid.rpg_item())
     print(hid.band_name())
     print(hid.rap_name())
-
-
