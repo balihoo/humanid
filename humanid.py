@@ -56,7 +56,7 @@ class HumanId(object):
         if len(noun) > 1:
             if noun.endswith('s'):
                 return noun
-            if any(noun.endswith(s) for s in ['sh', 'x', 'o']):
+            if any(noun.endswith(s) for s in ['sh', 'x', 'o', 'ch']):
                 return noun + 'es'
             if noun.endswith('y'):
                 if noun[-2] not in "aeoui":
