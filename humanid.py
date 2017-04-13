@@ -15,10 +15,12 @@ class HumanId(object):
 
         self.adjectives = sorted(read_list('adjectives'))
         self.nouns = sorted(read_list('nouns'))
+        self.verbs = sorted(read_list('action_verbs'))
         ofstuff_files =['ity', 'ence', 'ance', 'ment', 'tent', 'ncy', 'ness']
         self.ofstuff = sorted(sum([read_list(l) for l in ofstuff_files], []))
         self._rx_non_letter = re.compile('([^a-zA-Z])')
         self.rap_titles = ['lil', 'big', 'mc', 'dj', 'dr', 'young', 'notorious', 'phat', 'slim', 'tha']
+
 
     def _chunk(self, hexstr, count):
         """ chunk a string into 'count' equal parts, padding if necessary """
@@ -104,13 +106,25 @@ class HumanId(object):
         ]])
         return humid if not return_hash else (hexstr, humid)
 
+    def dadism(self, separator='_', hexstr=None, return_hash=False):
+        """money does not grow on trees"""
+        if return_hash and hexstr is None:
+            hexstr = uuid.uuid4().hex
+        sub = self._mksub(separator)
+
+        (noun, action, plural_noun) = self._words(hexstr, (self.nouns, self.verbs, self.nouns))
+        humid = separator.join([noun, 'does', 'not', action, 'on', self._pluralize(plural_noun)])
+        return humid if not return_hash else (hexstr, humid)
+
     def any_id(self, *args, **kwargs):
         """ create either a band name of an rpg item id """
         return random.choice([
             self.rpg_item,
             self.band_name,
-            self.rap_name
+            self.rap_name,
+            self.dadism
         ])(*args, **kwargs)
+
 
 if __name__ == "__main__":
     hid = HumanId()
@@ -121,6 +135,9 @@ if __name__ == "__main__":
     print(hid.band_name(hexstr=uid))
     print(hid.rap_name(hexstr=uid))
     print(hid.rap_name(hexstr=uid))
+    print(hid.dadism(hexstr=uid))
+    print(hid.dadism(hexstr=uid))
     print(hid.rpg_item())
     print(hid.band_name())
     print(hid.rap_name())
+    print(hid.dadism())

@@ -36,14 +36,17 @@ class TestHumanid(unittest.TestCase):
         adj_count = len(self.hid.adjectives)
         stuff_count = len(self.hid.ofstuff)
         title_count = len(self.hid.rap_titles)
+        verb_count = len(self.hid.verbs)
         print("\n====combination stats====")
         print("nouns: {}".format(noun_count))
         print("adjectives: {}".format(adj_count))
+        print("Action verbs: {}".format(verb_count))
         print("stuff: {}".format(stuff_count))
         print("rapper titles: {}".format(title_count))
         rpg_count = noun_count * adj_count * stuff_count
         band_count = noun_count * adj_count * noun_count
         rapper_count = title_count * adj_count * noun_count * title_count * noun_count
+        dadism_count = noun_count * verb_count * noun_count
 
         def prob_table(n, show=True, maxorder=8, minorder=1):
             def prob(k, n):
@@ -68,6 +71,10 @@ class TestHumanid(unittest.TestCase):
         print("\nrapper name combinations: {:,}".format(rapper_count))
         print("probability for collisions:")
         pband = prob_table(rapper_count)
+
+        print("\ndadism name combinations: {:,}".format(dadism_count))
+        print("probability for collisions:")
+        pdad = prob_table(dadism_count)
 
         print("\nitem_by_band_name combinations: {:,}".format(band_count * rpg_count))
         print("probability for collisions:")
@@ -142,10 +149,21 @@ class TestHumanid(unittest.TestCase):
         self.assertNotEqual(uuid, hexin)
         self.assertNotEqual(rapper, expected)
 
+    def test_dadism(self):
+        hexin = '089835382fd04075a7578e324ea904b5'
+        expected = 'original does not nominate on suns'
+        dad_speak = self.hid.dadism(separator=' ', hexstr=hexin)
+        self.assertEqual(dad_speak, expected)
+        (uuid, dad_speak) = self.hid.dadism(separator=' ', hexstr=hexin, return_hash=True)
+        self.assertEqual(uuid, hexin)
+        (uuid, dad_speak) = self.hid.dadism(separator=' ', return_hash=True)
+        self.assertNotEqual(uuid, hexin)
+        self.assertNotIn(dad_speak, expected)
+
     def test_any_id(self):
         hexin = 'e5dc0c113b1541b4b97a029be34904aa'
         d = dict(reversed(self.hid.any_id(separator=' ', hexstr=hexin, return_hash=True)) for i in range(1000))
-        self.assertEqual(len(d.keys()), 3)
+        self.assertEqual(len(d.keys()), 4)
         self.assertTrue(all([v == hexin for v in d.values()]))
 
 if __name__ == '__main__':
