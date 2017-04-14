@@ -5,10 +5,12 @@ import os
 import re
 import sys
 
+
 class HumanId(object):
     def __init__(self):
         """ create easy to remember, readable ids at random or based on a uuid """
         datadir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "data")
+
         def read_list(name):
             with open(os.path.join(datadir, name)) as f:
                 return f.read().splitlines()
@@ -16,21 +18,20 @@ class HumanId(object):
         self.adjectives = sorted(read_list('adjectives'))
         self.nouns = sorted(read_list('nouns'))
         self.verbs = sorted(read_list('action_verbs'))
-        ofstuff_files =['ity', 'ence', 'ance', 'ment', 'tent', 'ncy', 'ness']
+        ofstuff_files = ['ity', 'ence', 'ance', 'ment', 'tent', 'ncy', 'ness']
         self.ofstuff = sorted(sum([read_list(l) for l in ofstuff_files], []))
         self._rx_non_letter = re.compile('([^a-zA-Z])')
         self.rap_titles = ['lil', 'big', 'mc', 'dj', 'dr', 'young', 'notorious', 'phat', 'slim', 'tha']
-
 
     def _chunk(self, hexstr, count):
         """ chunk a string into 'count' equal parts, padding if necessary """
         l = len(hexstr)
         m = l % count
-        #number of characters in chunk
+        # number of characters in chunk
         n = int(math.ceil(float(l) / count))
-        #make string fitting len by appending the front
+        # make string fitting len by appending the front
         hexstr += hexstr[0:n - m]
-        #divide the string in equal chunks
+        # divide the string in equal chunks
         chunks = [hexstr[i:i+n] for i in range(0, l, n)]
         return chunks
 
@@ -42,10 +43,10 @@ class HumanId(object):
     def _words(self, hexstr, lists):
         """ picks a set of words from the lists, optionally based on a hex string """
         if hexstr is None:
-            #significantly faster than creating and processing a uuid
+            # significantly faster than creating and processing a uuid
             return (random.choice(l) for l in lists)
         idxs = self._indices(hexstr, [len(l) for l in lists])
-        return (l[i] for l,i in zip(lists, idxs))
+        return (l[i] for l, i in zip(lists, idxs))
 
     def _mksub(self, token):
         """ shorthand maker """
@@ -107,13 +108,16 @@ class HumanId(object):
         return humid if not return_hash else (hexstr, humid)
 
     def dadism(self, separator='_', hexstr=None, return_hash=False):
-        """money does not grow on trees"""
+        """create an id like a dad: money does not grow on trees"""
         if return_hash and hexstr is None:
             hexstr = uuid.uuid4().hex
         sub = self._mksub(separator)
 
         (noun, action, plural_noun) = self._words(hexstr, (self.nouns, self.verbs, self.nouns))
-        humid = separator.join([noun, 'does', 'not', action, 'on', self._pluralize(plural_noun)])
+        does = 'does'
+        if noun.endswith('s') and not noun.endswith('ss'):  # bad plural check
+            does = 'do'
+        humid = separator.join([noun, does, 'not', action, 'on', self._pluralize(plural_noun)])
         return humid if not return_hash else (hexstr, humid)
 
     def any_id(self, *args, **kwargs):
