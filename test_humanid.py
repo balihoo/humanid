@@ -151,7 +151,7 @@ class TestHumanid(unittest.TestCase):
 
     def test_dadism(self):
         hexin = '089835382fd04075a7578e324ea904b5'
-        expected = 'original does not nominate on suns'
+        expected = 'original does not hasten on suns'
         dad_speak = self.hid.dadism(separator=' ', hexstr=hexin)
         self.assertEqual(dad_speak, expected)
         (uuid, dad_speak) = self.hid.dadism(separator=' ', hexstr=hexin, return_hash=True)
