@@ -95,7 +95,7 @@ class TestHumanid(unittest.TestCase):
         hexin = 'e5dc0c113b1541b4b97a029be34904aa'
         lists = (self.hid.nouns, self.hid.adjectives, self.hid.ofstuff)
         (noun, adj, stuff) = self.hid._words(hexin, lists)
-        self.assertEqual((noun, adj, stuff), ('drawer', 'worried', 'polity'))
+        self.assertEqual((noun, adj, stuff), ('debt', 'ritzy', 'assumability'))
         # now test that not providing a hash does not match
         self.assertNotEqual(
             self.hid._words(None, lists),
@@ -111,7 +111,7 @@ class TestHumanid(unittest.TestCase):
 
     def test_rpg_item(self):
         hexin = 'e5dc0c113b1541b4b97a029be34904aa'
-        expected = "experienced##moonshine##of##polity"
+        expected = "parched##skylight##of##assumability"
         rpg = self.hid.rpg_item(separator='##', hexstr=hexin)
         self.assertEqual(rpg, expected)
         (uuid, rpg) = self.hid.rpg_item(separator='##', hexstr=hexin, return_hash=True)
@@ -122,7 +122,7 @@ class TestHumanid(unittest.TestCase):
 
     def test_band_name(self):
         hexin = 'e5dc0c113b1541b4b97a029be34904aa'
-        expected = "drawer and the worried porches"
+        expected = "debt and the ritzy hyphenations"
         band = self.hid.band_name(separator=' ', hexstr=hexin)
         self.assertEqual(band, expected)
         (uuid, band) = self.hid.band_name(separator=' ', hexstr=hexin, return_hash=True)
@@ -133,7 +133,7 @@ class TestHumanid(unittest.TestCase):
 
     def test_rap_name(self):
         hexin = '1b4b97a029be34904aae5dc0c113b154'
-        expected = "slim unfolded tempo feat phat lightin"
+        expected = "slim ruddy signup feat phat bacon"
         rapper = self.hid.rap_name(separator=' ', hexstr=hexin)
         self.assertEqual(rapper, expected)
         (uuid, rapper) = self.hid.rap_name(separator=' ', hexstr=hexin, return_hash=True)
